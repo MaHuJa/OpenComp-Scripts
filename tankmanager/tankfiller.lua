@@ -3,21 +3,26 @@ local args = {...}
 --component = require "component"
 --event = require "event"
 sides = require "sides"
-log = log or function() end
+--serialize = require "serialize"
+log = logmessage or function() end
+logdebug = log --function() end
 
 -- fill/unfill uncommon code
 
-function isReady(tank)
-	if not tank then 
-		log "No tank found"
-		return true 
-	end
-	tank = tank.getTankInfo()[1]
-	if tank.amount == 0 then 
-		log ("Tank full of" .. tank.name)
-		return true 
-	end
-	return false
+local function isReady(tank)
+  print ("isReady")
+  if not tank then 
+    log "No tank found"
+    return true 
+  end
+  tank = tank.getTankInfo()[1]
+--  print (tank.name, tank.amount, tank.capacity)
+  if tank.amount == tank.capacity then 
+    print ("Tank full of " .. tank.name)
+    return true 
+  end
+print (tank.amount, tank.name)
+  return false
 end
 
 -- fill/unfill common code
@@ -32,28 +37,33 @@ local is_replacing = false
 rs = assert(component.proxy(rs))
 
 local function replace_worker()
-	rs.setOutput(removeside,15)
-	coroutine.yield()
-	rs.setOutput(removeside,0)
-	rs.setOutput(placeside,15)
-	coroutine.yield()
-	rs.setOutput(placeside,0)
-	is_replacing = false
+  logdebug "Actually Replacing"
+  rs.setOutput(removeside,15)
+  coroutine.yield()
+  logdebug "Replacing - switch"
+  rs.setOutput(removeside,0)
+  rs.setOutput(placeside,15)
+  coroutine.yield()
+  logdebug "Replacing - end"
+  rs.setOutput(placeside,0)
+  is_replacing = false
 end
-	
+
 local function replace()
-	is_replacing = true
-	f = coroutine.wrap (replace_worker)
-	f()
-	event.timer(0.8,f,2)
+  print "Starting replacing"
+  is_replacing = true
+  f = coroutine.wrap (replace_worker)
+  f()
+  event.timer(0.8,f,2)
 end
 
 local function tick()
-	if if_replacing then return end
-	if isReady(component.proxy(tankaddr)) then
-		replace()
-	end
+  if is_replacing then return end
+  local b = isReady(component.proxy(tankaddr)) 
+  print (b)
+  if b then
+    replace()
+  end
 end
 
 event.timer(0.5, tick, math.huge)
-
