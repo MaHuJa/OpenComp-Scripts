@@ -2,8 +2,8 @@ component = require ("component")
 event = require ("event")
 
 local rs = component.redstone
-local side = require ("sides").down
-local default=true
+local side = require ("sides").bottom
+local default = false
 local duration = 3
 
 local gpu = component.gpu
@@ -12,16 +12,19 @@ local gpu = component.gpu
 local has_access = {...}
 
 --local monitor = address_here
-
+local function rs_str(b)
+  if b then return 15 else return 0 end
+end
 local function stop()
-  rs.setOutput(side,default)
+  rs.setOutput(side,rs_str(default))
 end
 local function start()
-  rs.setOutput(side,not default)
+  rs.setOutput(side,rs_str(not default))
   event.timer(duration,stop,1)
 end
 local function in_array(needle,haystack)
-  for local k,v in pairs(haystack) do
+  local k,v
+  for k,v in pairs(haystack) do
     if needle==v then return true end
   end
   return false
