@@ -61,12 +61,12 @@ local function check(message,address,x,y,button,user)
 end
 
 local function rscheck(message,address,side)
-	if rs.getBundledInput(side,triggercolor)>0 and rs.getBundledOutput(side,doorcolor)==0 then
-		start()
-	end
+  if rs.getBundledInput(side,triggercolor)>0 and rs.getBundledOutput(side,doorcolor)==rs_str(default) then
+    start()
+  end
 end
 
 stop()
 
 event.listen("touch",check)
-event.listen("redstone_changed", start)
+event.listen("redstone_changed", rscheck)
