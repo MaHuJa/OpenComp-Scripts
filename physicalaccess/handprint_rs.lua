@@ -60,7 +60,13 @@ local function check(message,address,x,y,button,user)
   return true
 end
 
+local function rscheck(message,address,side)
+	if rs.getBundledInput(side,triggercolor)>0 and rs.getBundledOutput(side,doorcolor)==0 then
+		start()
+	end
+end
+
 stop()
 
 event.listen("touch",check)
-event.listen("redstone", start)	-- TODO: Checking that it's not some other rs signal change
+event.listen("redstone_changed", start)
