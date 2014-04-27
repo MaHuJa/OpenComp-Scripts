@@ -1,9 +1,15 @@
+-- This variant has two differences from the main
+-- using bundled cable
+-- a redstone signal will trigger the doors
+
 component = require ("component")
 event = require ("event")
 
 local rs = component.redstone
 local side = require ("sides").bottom
-local default = false
+local doorcolor = require ("colors").white
+local triggercolor = require ("colors").orange
+local default = true
 local duration = 3
 
 local gpu = component.gpu
@@ -16,11 +22,11 @@ local function rs_str(b)
   if b then return 15 else return 0 end
 end
 local function stop()
-  rs.setOutput(side,rs_str(default))
+  rs.setBundledOutput(side,doorcolor,rs_str(default))
 end
 local function start()
-  rs.setOutput(side,rs_str(not default))
-  event.timer(duration,stop,1)
+  rs.setOutput(side,doorcolor,rs_str(not default))
+  event.timer(duration,stop)
 end
 local function in_array(needle,haystack)
   local k,v
@@ -57,4 +63,4 @@ end
 stop()
 
 event.listen("touch",check)
-
+event.listen("redstone", start)	-- TODO: Checking that it's not some other rs signal change
