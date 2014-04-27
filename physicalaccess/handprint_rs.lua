@@ -25,7 +25,7 @@ local function stop()
   rs.setBundledOutput(side,doorcolor,rs_str(default))
 end
 local function start()
-  rs.setOutput(side,doorcolor,rs_str(not default))
+  rs.setBundledOutput(side,doorcolor,rs_str(not default))
   event.timer(duration,stop)
 end
 local function in_array(needle,haystack)
