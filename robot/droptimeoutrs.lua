@@ -21,16 +21,19 @@ end
 function maxrs()
   local ret = 0
   for i = 0,5 do
-    ret = math.max(res,rs.getInput(i))
+    ret = math.max(ret,rs.getInput(i))
   end
+  return ret;
 end
 
 function cycle()
   drop()
-  sleep(4)
+  sleep(2)
   pickup()
   sleep(11)
-  while maxrs() > 0 do sleep(1);
+  while maxrs() > 0 do 
+    sleep(1);
+  end
 end
 
 while true do cycle() end 
