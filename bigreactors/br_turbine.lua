@@ -1,10 +1,15 @@
 component = require "component";
 turbine = component.br_turbine;
 reactor = component.br_reactor;
+capacitor = component.capacitor_bank;
+--capacitor = pcall(component.getPrimary,"capacitor_bank") or component.br_turbine;
 
-rpm_min = 1800
-rpm_max = 1850
-rpm_emerg = 1950
+rpm_min = 1800;
+rpm_max = 1850;
+rpm_emerg = 1950;
+
+energy_low = 5000;
+energy_high = capacitor.getMaxEnergyStored()-energy_low;
 
 state = function()
   print "State did not initialize"
@@ -48,11 +53,11 @@ function generate()
     turbine.setActive(true)
   end
   if turbine.getRotorSpeed() < rpm_min then setstate(lowrpm) end
-  if turbine.getEnergyStored() > 800000 then setstate(idle) end
+  if capacitor.getEnergyStored() > energy_high then setstate(idle) end   -- todo: make %
   if turbine.getRotorSpeed() > rpm_emerg then setstate(emergency) end
 end
 
-if turbine.getEnergyStored() < 800000 then setstate(generate) end
+if capacitor.getEnergyStored() < energy_high then setstate(generate) end
 
 --[[ State3: Idle
   Any energy production will be wasted, so save some fuel
@@ -65,12 +70,12 @@ function idle()
     turbine.setInductorEngaged(false)
     turbine.setActive(true)
   end
-  if turbine.getEnergyStored() < 5000 then setstate(generate) end
+  if capacitor.getEnergyStored() < energy_low then setstate(generate) end
   if turbine.getRotorSpeed() < rpm_min then setstate(lowrpm) end
   if turbine.getRotorSpeed() > rpm_emerg then setstate(emergency) end
 end
 
-if turbine.getEnergyStored() >= 800000 then setstate(idle) end
+if capacitor.getEnergyStored() >= energy_high then setstate(idle) end
 
 --[[ State4: Emergency
   The rotor has reached a dangerous speed
