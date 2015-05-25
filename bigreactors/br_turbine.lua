@@ -8,7 +8,7 @@ rpm_min = 1800;
 rpm_max = 1850;
 rpm_emerg = 1950;
 
-energy_low = 5000;
+energy_low = 50000;
 energy_high = capacitor.getMaxEnergyStored()-energy_low;
 
 state = function()
