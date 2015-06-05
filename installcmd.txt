@@ -1,0 +1,16 @@
+oppm install tar
+oppm install grep
+oppm install network
+oppm install vcomponent
+--oppm install nettools
+
+oppm install natable
+oppm install dispenser
+oppm install wsare
+
+wget 'https://raw.githubusercontent.com/mpmxyz/ocprograms/master/tars/crunch.tar'
+
+-- nav prom power-monitor p6 strict tapeutils tdit thread vcomponent wocchat wsare wsare_srv
+
+--oppm install netflash
+
