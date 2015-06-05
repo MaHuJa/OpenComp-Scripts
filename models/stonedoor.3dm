@@ -1,0 +1,11 @@
+--Stonedoor
+{
+  label = "Stone",
+  tooltip = "Hidden stone door",
+  emitRedstone = false,
+  buttonMode = false,
+  shapes = {
+    {0,0,0,16,16,16,texture="stone"},
+    {0,0,0,1,16,1,texture="stone", state=true},  
+  }
+}
