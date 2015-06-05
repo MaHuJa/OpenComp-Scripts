@@ -5,9 +5,9 @@ function com(s)
 end
 
 modem = com "modem";
-modem.open(1);
+modem.open(5);
 
-modem.broadcast(1,"HERE I AM!")
+modem.broadcast(5,"HERE I AM!")
 
 while true do
   repeat
@@ -15,9 +15,9 @@ while true do
   until evt == "modem_message"
   local raddr = raddr
   local fn, err = load(msg);
-  if not fn then modem.send(raddr,1,err)
+  if not fn then modem.send(raddr,5,err)
   else
-    modem.send(raddr,1,
+    modem.send(raddr,5,
       pcall(fn)
     )
   end
