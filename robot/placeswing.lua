@@ -2,7 +2,7 @@ robot = require ("robot")
 
 function place(fn)
   if fn() then return true end
-  for i = 1,16 do
+  for i = 1,robot.inventorySize() do
     if robot.count(i) > 0 then
       robot.select(i);
       if fn() then return true
