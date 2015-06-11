@@ -34,10 +34,11 @@ local function coilcheck(T)
 	local rpm = T.getRotorSpeed();
 	if rpm < 1800 then 
 		T.setInductorEngaged(false);
-	elseif rpm > 1980 then
+	elseif rpm > 1950 then
 		T.setInductorEngaged(true);
 	else 
-		T.setInductorEngaged( T.getEnergyStored() < 0.6*T.getEnergyStoredMax() );
+    local energy_threshold = 600000;
+		T.setInductorEngaged( T.getEnergyStored() < energy_threshold );
 	end
 end
 
