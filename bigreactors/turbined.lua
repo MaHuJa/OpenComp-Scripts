@@ -25,7 +25,7 @@ local function steamsupply(T)
 	elseif rpm > 1950 then
 		T.setFluidFlowRateMax (0)
 	else
-		local factor = (rpm-1850)/100;
+		local factor = (100-rpm+1850)/100;
 		T.setFluidFlowRateMax (factor*maxsteam);
 	end
 end
