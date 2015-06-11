@@ -5,26 +5,23 @@ Big reactors actively cooled reactor.
 
 Unlike turbines, I'm making the assumption that there is only one reactor on a computer net.
 
-We want the reactor to auto-tune to demand. I dont' see a way to do this well with a stateless program.
-isActivelyCooled 
+Important observation:
+Reactor temperature will continue to build when it doesn't have coolant flow.
+This means we can scale our reactor output based on current heat levels.
+
+Other inputs of note:
 - If the hot buffer is full, getHotFluidProducedLastTick equals demand.
-getHotFluidAmount == ?
-- If the hot buffer is not full, getHotFluidProducedLastTick equals production. 
 
-- Does getEnergyProducedLastTick == getHotFluidProducedLastTick ?
-If not, this could be all I need.
-
-A full steam buffer means throttle back, an empty steam buffer means go higher.
-This feedback will tend to be abrupt, while our actions have delayed effects.
-
-- Do linear fallback on production until we detect it too low, then bump it up a bit?
-- Scale CR setting to clamp down the bracket around the value? (Accounting for demand changing!)
+Figure out the "desired temperature" to scale against. 
+1950 sounds fine.
 
 ]]
  
 component = require ("component");
 event = require ("event");
-reactor = component.br_reactor; 
+local reactor = component.br_reactor; 
+
+assert (reactor.isActivelyCooled(), "This program is for actively cooled (steam producing) reactors.");
 
 
 
