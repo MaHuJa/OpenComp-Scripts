@@ -1,3 +1,5 @@
+component = require "component"
+event = require "event"
 
 for addr in component.list("br_turbine") do
 	component.invoke(addr,'setActive',false)
