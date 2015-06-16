@@ -4,20 +4,20 @@ params = {...};
 if params[1] == '-h' then
   print (
 [[Usage: placeline_n stepsize countsteps function
-  stepsize - place this many blocks (3)");
-  countsteps - how many columns to make (infinite");
-  function - what to do after each step ("robot.down()")
+  stepsize - place this many blocks     9
+  countsteps - how many groups to run   4
+  function - what to do after each step "robot.right()"
 ]]);
   return false;
 end
 
 assert (not params[1] or tonumber(params[1]), "Stepsize param is not a number");
-local stepsize = tonumber(params[1]) or 3;
+local stepsize = assert(tonumber(params[1]));
 
 assert (not params[2] or tonumber(params[2]), "Count param is not a number");
-local length = tonumber(params[2]) or math.huge;
+local length = assert(tonumber(params[2]));
 
-local func = params[3] and assert(load(params[3])) or robot.down;
+local func = assert(load(params[3]));
 
 function place()
   if robot.placeDown() or robot.detectDown() then return true end
