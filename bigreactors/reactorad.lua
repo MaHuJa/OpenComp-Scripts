@@ -28,9 +28,13 @@ local reactor = component.br_reactor;
 assert (reactor.isActivelyCooled(), "This program is for actively cooled (steam producing) reactors.");
 
 local function tick()
+	local hot = reactor.getHotFluidAmount()
+	if hot < 20000 then -- deficit
+		reactor.setAllControlRodLevels(0)
+	end
 	local temp = reactor.getFuelTemperature();
 	local factor = temp/1950;	-- higher temp
-	reactor.setAllControlRodLevels(factor*100); -- lower effect
+	reactor.setAllControlRodLevels(factor*100); -- means lower effect
 end
 
 _G.reactorad_pid = _G.reactorad_pid or {};
