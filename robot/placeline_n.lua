@@ -42,7 +42,7 @@ for _ = 1,length do
   forward()
   forward()
   forward()
-  assert(func())
+  func();
   io.write '.'
 end
 
