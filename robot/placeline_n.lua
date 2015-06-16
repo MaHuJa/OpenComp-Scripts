@@ -1,7 +1,7 @@
 robot = require "robot"
 
 params = {...};
-if params[1] == '-h' then
+if #params < 3 then
   print (
 [[Usage: placeline_n stepsize countsteps function
   stepsize - place this many blocks     9
