@@ -2,7 +2,6 @@ local component = require("component")
 local event = require("event")
 local modem = component.modem
 modem.open(5)
-modem.broadcast(5, "drone=component.proxy(component.list('drone')())")
 while true do
   local cmd=io.read()
   if not cmd then return end
