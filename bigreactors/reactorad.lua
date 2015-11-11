@@ -33,8 +33,8 @@ local function tick()
 		reactor.setAllControlRodLevels(0)
 	end
 	local temp = reactor.getFuelTemperature();
-	local factor = temp/1950;	-- higher temp
-	reactor.setAllControlRodLevels(factor*100); -- means lower effect
+	local factor = temp/500;	-- higher temp
+	reactor.setAllControlRodLevels(math.min(factor*100,100)); -- means lower effect
 end
 
 _G.reactorad_pid = _G.reactorad_pid or {};
