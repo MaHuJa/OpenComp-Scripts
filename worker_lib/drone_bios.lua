@@ -28,20 +28,29 @@ mdm.open(port)
 mdm.bc=mdm.broadcast
 drn=com"drone"
 pull = computer.pullSignal
-
+unpack = table.unpack
+-- State 'waiting'. Nobody 'owns' us, so we let them know we're around.
 local function wait()
   local evt,msg
   drn.setLightColor(0xff0000)
   drn.setStatusText('Available')
+  local t = {'avail', 'drone' };
+  --if drone.name() then t[#t+1]=drone.name() end
+  for v in component.list() do
+    t[#t+1]=v
+  end;
   repeat
-    mdm.bc(port,"avail"); -- todo: type (drone), name, component list
+    mdm.bc(port,table.unpack(t)); -- todo: test for high component count
     evt,_,raddr,_,_,msg = pull(5)
   until evt=='modem_message' and msg == 'acquire';
   mdm.send(raddr,port,'yours')
-  -- todo: bc 'taken' ?
+  mdm.bc(port,'taken')
   drn.setStatusText(raddr)
   return assign()
 end
+
+-- State 'assigned'. Waiting for instructions from our owner
+-- todo: timeout
 local function assign()
   drn.setLightColor(0xffff00)
   repeat
@@ -52,6 +61,8 @@ local function assign()
   if msg == 'do' then return work(param) end
   return assign()
 end
+
+-- State 'working'. Following our owner's orders.
 local function work(param)
   drn.setLightColor(0x0000ff)
   local fn,err = load(param)
@@ -68,6 +79,5 @@ local function work(param)
     t[1]='done'
   end
   mdm.send(raddr,port,table.unpack(t))
-  -- todo "error"; remove 
   return assign()
 end
