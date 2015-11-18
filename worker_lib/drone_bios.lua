@@ -30,6 +30,7 @@ drn=com"drone"
 pull = computer.pullSignal
 unpack = table.unpack
 -- State 'waiting'. Nobody 'owns' us, so we let them know we're around.
+-- todo: introduce a low-power (go recharge) state.
 local function wait()
   local evt,msg
   drn.setLightColor(0xff0000)
