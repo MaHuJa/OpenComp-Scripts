@@ -35,21 +35,21 @@ local function checkPower()
 	involtp = involt;
 	involt = eln.wirelessGet("involt")*4000;		-- 0-4000 V;
 	sinkp = sink or -1;
-	sink = (eln.wirelessGet("powersink") or -1) * 100;
+	sink = (eln.wirelessGet("Powersink") or -1) * 100;
 	
-	
-	local outpower = -1;	-- 0-16000 W
+	output1p = output1 or 0;
+	output1 = eln.wirelessGet("Output1_16kW") or 0;	-- calcs performed in report prep
+	output2p = output2 or 0;
+	output2 = eln.wirelessGet("Output2_16kW") or 0;
 
 	local report = false;
 	local timenow = computer.uptime();
 	
-	if (exvolt<3150) and check_timeout("exvolt") then
-		report = true;
-	end
-	if (involt<3150) and check_timeout("involt") then
-		report = true;
-	end
-	if (sink == 0 and sinkp == 0 and check_timeout("sink")) then
+	if (exvolt<3150) and check_timeout("exvolt")
+		or (involt<3150) and check_timeout("involt") 
+		or (sink == 0 and sinkp == 0 and check_timeout("sink")) 
+		or not exvoltp -- first run
+		then
 		report = true;
 	end
 	
@@ -59,21 +59,24 @@ local function checkPower()
 			"External ", 
 			round2(exvolt), 
 			"V (from " , 
-			round2(exvoltp),
+			round2(exvoltp or 0),
 			"V)\n",
 			"Internal ",
 			round2(involt), 
 			"V (from " , 
-			round2(involtp),
+			round2(involtp or 0),
 			"V)\n",
 			"Sink ",
 			round2(sink), 
 			"% (from " , 
-			round2(sinkp),
+			round2(sinkp or 0),
 			"%)\n",
 			"Output ",
-			round2(outpower),
-			"W";
+			round2((output1+output2)*16000),		-- calculation logic here!!!
+			"W (from ",
+			round2((output1p+output2p)*16000),
+			"W) balance ",
+			output1/output2,
 		};
 		do_report (msg)
 	end
@@ -87,7 +90,12 @@ local function checkCharcoal()
 	
 	local percent = charcoal/charcoal_max;
 	local report = false;
-	if percent < 0.5 and check_timeout("charcoal50") then report = true; end;
+	if percent < 0.5 and check_timeout("charcoal50") 
+	  or percent < 0.2 and check_timeout("charcoal20")
+		or percent == 0 and check_timeout("charcoal0")
+		then 
+		report = true; 
+	end;
 	
 	if report then
 		msg = "Charcoal at " .. charcoal .. "/" .. charcoal_max;
@@ -112,7 +120,7 @@ function do_report (msg)
 	file:close();
 end
 
-do_report("Starting base monitor v1");
+do_report("Starting base monitor v2");
 
 while true do 
 	os.sleep(5)
