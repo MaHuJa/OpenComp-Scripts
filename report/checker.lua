@@ -1,3 +1,9 @@
+--[[
+	This program is made to monitor a specific setup,
+	an 8-generator ELN steam power plant on Erisia.
+	Most control functions are done in ELN itself, including a proportional power drain controller.
+]]
+
 -- dependencies
 local component = require "component";
 local computer = require "computer";
@@ -23,7 +29,7 @@ function check_timeout (name)
   local now = computer.uptime();
 	local timetarget = timeout[name] or 0;
 	local retval = timetarget < now;
-	timeout[name] = now + 60;  -- Effectively; do not report again unless it has been ok for 60 seconds
+	timeout[name] = now + 60;  -- Effectively "do not report again unless it has been ok for 60 seconds"
 	return retval;
 end
 
@@ -35,10 +41,12 @@ local function checkPower()
 	involtp = involt;
 	involt = eln.wirelessGet("involt")*4000;		-- 0-4000 V;
 	sinkp = sink or -1;
-	sink = (eln.wirelessGet("Powersink") or -1) * 100;
+	sink = eln.wirelessGet("powersink");
+	sink = (1-sink ) * 100;
 	
 	output1p = output1 or 0;
-	output1 = eln.wirelessGet("Output1_16kW") or 0;	-- calcs performed in report prep
+	output1 = eln.wirelessGet("Output1_16kW") or 0;
+	output1 = output1 * 16000;
 	output2p = output2 or 0;
 	output2 = eln.wirelessGet("Output2_16kW") or 0;
 
@@ -56,27 +64,30 @@ local function checkPower()
 	if (report) then
 		msg = { 
 			"Power alert:\n",
-			"External ", 
+			"External: ", 
 			round2(exvolt), 
 			"V (from " , 
 			round2(exvoltp or 0),
 			"V)\n",
-			"Internal ",
+			"Internal: ",
 			round2(involt), 
 			"V (from " , 
 			round2(involtp or 0),
 			"V)\n",
-			"Sink ",
+			"Sink: ",
 			round2(sink), 
 			"% (from " , 
 			round2(sinkp or 0),
 			"%)\n",
-			"Output ",
-			round2((output1+output2)*16000),		-- calculation logic here!!!
+			"Output: ",
+			round2(output1+output2),
 			"W (from ",
-			round2((output1p+output2p)*16000),
+			round2(output1p+output2p),
 			"W) balance ",
-			output1/output2,
+			round2(output1/output2),
+			"\n",
+			"Disconnection: ",
+			eln.wirelessGet("PowerDisconnect"),
 		};
 		do_report (msg)
 	end
@@ -98,7 +109,7 @@ local function checkCharcoal()
 	end;
 	
 	if report then
-		msg = "Charcoal at " .. charcoal .. "/" .. charcoal_max;
+		local msg = "Charcoal at " .. charcoal .. "/" .. charcoal_max;
 		do_report(msg);
 	end
 end
@@ -120,7 +131,7 @@ function do_report (msg)
 	file:close();
 end
 
-do_report("Starting base monitor v2");
+do_report("Starting base monitor v3");
 
 while true do 
 	os.sleep(5)
