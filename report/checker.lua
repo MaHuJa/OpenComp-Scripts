@@ -7,6 +7,7 @@
 -- dependencies
 local component = require "component";
 local computer = require "computer";
+local sides = require "sides";
 local eln = component.ElnProbe;
 local inet = component.internet;
 
@@ -119,6 +120,22 @@ local function checkCharcoal()
 	return report;
 end
 
+local chunkloader_ic = component.inventory_controller;
+local function check_chunkloader()
+	local report = false;
+	local charcoal = assert(chunkloader_ic.getSlotStackSize(sides.east,1),"Cannot read chunkloader content");
+	if charcoal < 16 and check_timeout ("chunk16")
+	  or charcoal < 8 and check_timeout ("chunk8")
+		or charcoal == 0 and check_timeout ("chunk0")
+	then report = true; end
+	
+	if report then
+		local fraction = 24/64;
+		local msg = "Chunkloader expires in " .. charcoal*fraction .. "hours";
+		do_report(msg);
+	end
+end
+
 function do_report (msg)
 	assert (slackpost, "Slackpost not set.");
 	if (type(msg)=='table') then
@@ -136,12 +153,13 @@ function do_report (msg)
 	file:close();
 end
 
-do_report("Starting base monitor v4");
+do_report("Starting base monitor v5");
 
 while true do 
 	os.sleep(5)
 	checkPower();
 	checkCharcoal();
+	check_chunkloader();
 end
 
 
