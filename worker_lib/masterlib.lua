@@ -12,6 +12,7 @@ function new_worker(raddr)
 	ret.last_update = os.clock()
   local ret = {
 	  function acquire(this)
+			assert(this);
 			modem.send(this.raddr, this.port, 'acquire');
 			repeat 
 				event.pull('modem_message',nil,raddr);
@@ -71,10 +72,13 @@ function incoming_message(evt, laddr, raddr, port, msg, ...)
 			worker.status = 'taken'
 		end
 	elseif msg == 'compile_error' then
-		print(...) os.sleep(5)
+		-- slipped through the local compile check, but failed remote. Check arch differences.
+		print(...) os.exit(5)
 	elseif msg == 'error'
 		worker.returns = {nil,...}
 	elseif msg == 'done'
 		worker.returns = {...};
 	end;
 end
+event.listen("modem_message",incoming_message);
+
