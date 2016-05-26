@@ -18,6 +18,7 @@ end
 
 -- Utility functions
 function round2(num) return math.floor(num*100)/100; end
+function linear(zero,one, value) return zero + value*(one-zero); end
 
 -- Error rate limiter
 local timeout = timeout or {
@@ -91,13 +92,16 @@ local function checkPower()
 		};
 		do_report (msg)
 	end
+	return report;
 end
 
 local charcontainer = component.mcp_mobius_betterbarrel;
-assert (charcontainer.getStoredItemType()['label']=='Charcoal', "Not a charcoal barrel!");
+-- Optionally support charcoal blocks
+--assert (charcontainer.getStoredItemType()['label']=='Charcoal', "Not a charcoal barrel!");
+print ("Barrel monitor looking at: ",charcontainer.getStoredItemType()['label']);
+local charcoal_max = charcontainer.getMaxStoredCount();
 local function checkCharcoal()
 	local charcoal = charcontainer.getStoredCount();
-	local charcoal_max = charcontainer.getMaxStoredCount();
 	
 	local percent = charcoal/charcoal_max;
 	local report = false;
@@ -112,6 +116,7 @@ local function checkCharcoal()
 		local msg = "Charcoal at " .. charcoal .. "/" .. charcoal_max;
 		do_report(msg);
 	end
+	return report;
 end
 
 function do_report (msg)
@@ -131,7 +136,7 @@ function do_report (msg)
 	file:close();
 end
 
-do_report("Starting base monitor v3");
+do_report("Starting base monitor v4");
 
 while true do 
 	os.sleep(5)
