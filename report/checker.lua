@@ -51,6 +51,7 @@ local function checkPower()
 	output1 = output1 * 16000;
 	output2p = output2 or 0;
 	output2 = eln.wirelessGet("Output2_16kW") or 0;
+	output2 = output2 * 16000;
 
 	local report = false;
 	local timenow = computer.uptime();
@@ -66,28 +67,37 @@ local function checkPower()
 	if (report) then
 		msg = { 
 			"Power alert:\n",
+			
 			"External: ", 
 			round2(exvolt), 
 			"V (from " , 
 			round2(exvoltp or 0),
 			"V)\n",
+			
 			"Internal: ",
 			round2(involt), 
 			"V (from " , 
 			round2(involtp or 0),
 			"V)\n",
+			
 			"Sink: ",
 			round2(sink), 
 			"% (from " , 
 			round2(sinkp or 0),
 			"%)\n",
+			
+			"Steam Input setting: ",
+			round2(eln.wirelessGet("turbine_input")),
+			"\n",
+			
 			"Output: ",
 			round2(output1+output2),
 			"W (from ",
 			round2(output1p+output2p),
 			"W) balance ",
-			round2(output1/output2),
+			round2(output1-output2),
 			"\n",
+
 			"Disconnection: ",
 			eln.wirelessGet("PowerDisconnect"),
 		};
@@ -127,6 +137,7 @@ local function check_chunkloader()
 	if charcoal < 16 and check_timeout ("chunk16")
 	  or charcoal < 8 and check_timeout ("chunk8")
 		or charcoal == 0 and check_timeout ("chunk0")
+		or charcoal == 64 and check_timeout ("chunk64")
 	then report = true; end
 	
 	if report then
