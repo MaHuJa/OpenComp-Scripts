@@ -25,9 +25,9 @@ end
 
 
 for _ = 1,length do
-  forward()
-  forward()
-  forward()
+  for step = 1,stepsize do
+    forward()
+  end
   assert(robot.down())
   io.write '.'
 end
