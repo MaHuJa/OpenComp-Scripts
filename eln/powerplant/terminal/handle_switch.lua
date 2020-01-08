@@ -3,16 +3,9 @@
 local switch_width = 16;
 local switch_height = 3;
 
-function debugout(s)
-    gpu.set(60,40,s);
-end
-debugout = print;
-
 local function clickhandler(_,screenaddr,x,y,button, name)
-    print ("clickhandler",switches,screenaddr,x,y,button,name);
     assert (switches);
     local row = math.floor((y-1)/3+1);
-    print (row);
     row = switches[row];
     if not row then return end;
     local column = (gpu.getResolution()-x)/switch_width;
